@@ -1,0 +1,172 @@
+*{margin: 0; padding: 0; box-sizing: border-box; }
+ul,ol{list-style: none; }
+.clearfix::after{
+  content: '';
+  display: block;
+  clear: both;
+}
+body{
+  overflow: hidden;
+}
+
+.bg{
+  z-index: -1;
+  position: absolute;
+  top: -5vh;
+  left: -5vh;
+  right: -5vh;
+  bottom: -5vh;
+  background: url(http://cloud.hunger-valley.com/music/public_tuijian_spring.jpg-big) center center;
+  background-size: cover;
+  filter: blur(5px);    
+}
+.bg::after{
+  content: '';  
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.4);
+}
+
+main{
+  height: 75vh;
+  display: flex;
+  justify-content: center;
+  padding-top: 12vh;
+}
+main > aside > figure{
+  width: 46vh;
+  height: 46vh;
+  background: url(http://cloud.hunger-valley.com/music/public_tuijian_spring.jpg-middle) center center;
+  background-size: cover;
+}
+main > aside .actions{
+  display: flex;
+  justify-content: space-around;
+  margin-top: 5vh;
+}
+main > aside .iconfont{
+  font-size: 6vh;  
+  color: rgba(255,255,255,0.4);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+main > aside .iconfont:hover{
+  color: #FFF;
+}
+main > .info{
+  color: #FFF;
+  margin-left: 10vh;
+}
+main > .info > .tag{
+  font-size: 2vh;
+  padding: 0.8vh 1.6vh;
+  background: #2E6EEC;
+}
+main > .info > h1{
+  font-size: 6vh;
+  margin-top: 2vh;
+}
+main > .info > .artiest{
+  font-size: 3vh;
+  margin-top: 2vh;
+}
+main > .info > .lyric{
+  font-size: 2vh;
+  margin-top: 2vh;
+  color: rgba(255,255,255,0.4);
+}
+
+main > .info > ul{
+  margin-top: 18vh;
+}
+main > .info > ul > li{
+  float: left;
+  width: 29vh;
+}
+main > .info > ul > li > .iconfont{
+  font-size: 4vh;
+}
+main > .info > .progressBarContainer{
+  margin-top: 7vh;
+  display: flex;
+  align-items: center;
+}
+main > .info > .progressBarContainer > .progressBar{
+  position: relative;
+  flex: 1;
+  height: 1vh;
+  background: rgba(255,255,255,0.4);
+  border-radius: 0.3vh;
+}
+main > .info > .progressBarContainer > .progressBar > .progress{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 10%;
+  height: 1vh;
+  background: #FFF;
+  border-radius: 0.3vh;
+}
+main > .info > .progressBarContainer > .currentTime{
+  font-size: 2vh;
+  margin-left: 1vh;
+}
+
+footer{
+  position: relative;
+  height: 25vh;
+  color: #FFF;
+  background: rgba(255,255,255,0.2);
+  box-shadow: 0 0 0.2vh 0.2vh rgba(255,255,255,0.2);
+}
+footer .iconfont{
+  position: absolute;
+  color: rgba(255,255,255,0.4);
+  font-size: 6vh;
+  top: 9.5vh;
+  cursor: pointer;
+  opacity: 0;
+}
+footer .icon-left{
+  left: 13vh;
+}
+footer .icon-right{
+  right: 13vh;
+}
+footer:hover .iconfont{
+  opacity: 1;
+}
+footer .iconfont:hover{
+  color: #FFF;
+}
+footer ul{
+  position: absolute;
+  left: 20vh;
+}
+footer li{
+  float: left;
+  width: 21vh;
+  height: 21vh;
+  margin: 2vh;
+  text-align: center;
+  cursor: pointer;
+}
+footer li:hover{
+  box-shadow: 0 0 0.5vh 0.5vh rgba(255,255,255,0.8)
+}
+footer li.active{
+  box-shadow: 0 0 0.5vh 0.5vh rgba(255,255,255,0.8)
+}
+footer li > .cover{
+  height: 16vh;
+  background-size: cover;
+  background-position: center center;
+}
+footer li > h3{
+  font-size: 2vh;
+  margin-top: 2vh;
+  color: rgba(255,255,255,0.6);
+}
