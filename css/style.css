@@ -9,6 +9,26 @@ body{
   overflow: hidden;
 }
 
+.layout{
+  margin: 0px auto;
+  width: 600px;
+}
+@media(min-width: 900px){
+  .layout{
+    width: 800px;
+  }
+}
+@media(min-width: 1000px){
+  .layout{
+    width: 900px;
+  }
+}
+@media(min-width: 1200px){
+  .layout{
+    width: 1100px;
+  }
+}
+
 .bg{
   z-index: -1;
   position: absolute;
@@ -116,11 +136,17 @@ main > .info > .progressBarContainer > .currentTime{
 }
 
 footer{
-  position: relative;
   height: 25vh;
   color: #FFF;
   background: rgba(255,255,255,0.2);
   box-shadow: 0 0 0.2vh 0.2vh rgba(255,255,255,0.2);
+}
+footer > .layout{
+  position: relative;
+}
+footer .box{
+  height: 25vh;
+  overflow: hidden;
 }
 footer .iconfont{
   position: absolute;
@@ -129,12 +155,13 @@ footer .iconfont{
   top: 9.5vh;
   cursor: pointer;
   opacity: 0;
+  transition: all 0.3s;
 }
 footer .icon-left{
-  left: 13vh;
+  left: -6vh;
 }
 footer .icon-right{
-  right: 13vh;
+  right: -6vh;
 }
 footer:hover .iconfont{
   opacity: 1;
@@ -143,8 +170,8 @@ footer .iconfont:hover{
   color: #FFF;
 }
 footer ul{
-  position: absolute;
-  left: 20vh;
+  position: relative;
+  left: 0;
 }
 footer li{
   float: left;
