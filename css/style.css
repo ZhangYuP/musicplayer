@@ -125,10 +125,11 @@ main > .info > .progressBarContainer > .progressBar > .progress{
   position: absolute;
   top: 0;
   left: 0;
-  width: 10%;
   height: 1vh;
+  width: 0;
   background: #FFF;
   border-radius: 0.3vh;
+  transition: width 1s linear;
 }
 main > .info > .progressBarContainer > .currentTime{
   font-size: 2vh;
@@ -151,17 +152,17 @@ footer .box{
 footer .iconfont{
   position: absolute;
   color: rgba(255,255,255,0.4);
-  font-size: 6vh;
-  top: 9.5vh;
+  font-size: 7vh;
+  top: 8vh;
   cursor: pointer;
   opacity: 0;
   transition: all 0.3s;
 }
 footer .icon-left{
-  left: -6vh;
+  left: -8vh;
 }
 footer .icon-right{
-  right: -6vh;
+  right: -8vh;
 }
 footer:hover .iconfont{
   opacity: 1;
