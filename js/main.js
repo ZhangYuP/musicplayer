@@ -168,6 +168,7 @@ var Fm = {
       dataType: 'json',
       data: {sid: this.song.sid}
     }).then((ret)=>{
+      var html = ''
       var lyric = ret.lyric
       this.lyricObj = {}
       lyric.split('\n').forEach((line)=>{
@@ -176,9 +177,12 @@ var Fm = {
         if(times){
           times.forEach((time)=>{
             this.lyricObj[time] = str
+            html += `<p data-time="${time}">${this.lyricObj[time]}</p>`
           })
         }
       })
+      this.$main.find('.info .lyric').css({"margin-top": "12vh"}).html(html)
+      
     })
   },
   setMusic() {
@@ -196,10 +200,11 @@ var Fm = {
     second = second.length === 2 ? second : '0' + second
     this.$main.find('.currentTime').text(min + ':' + second)
     this.$main.find('.progress').width(this.audio.currentTime/this.audio.duration*100 + '%')
-    var line = this.lyricObj[(min.length === 1 ? '0' + min : min) + ':' + second]
-    if(line){
-      this.$main.find('.info .lyric').text(line)
-    }
+    // 歌词高亮和滚动
+    var lyricTime = (min.length === 1 ? '0' + min : min) + ':' + second
+    this.$main.find(`[data-time="${lyricTime}"]`).addClass('active')
+      .siblings().removeClass('active')
+      .parent().animate({marginTop: "-=3vh"})    
   }
 }
 

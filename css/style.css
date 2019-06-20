@@ -80,27 +80,37 @@ main > .info{
   color: #FFF;
   margin-left: 10vh;
 }
-main > .info > .tag{
+main > .info .tag{
   font-size: 2vh;
   padding: 0.8vh 1.6vh;
   background: #2E6EEC;
 }
-main > .info > h1{
+main > .info h1{
   font-size: 6vh;
   margin-top: 2vh;
 }
-main > .info > .artiest{
+main > .info .artiest{
   font-size: 3vh;
   margin-top: 2vh;
 }
-main > .info > .lyric{
-  font-size: 2vh;
+main > .info .lyricContainer{
   margin-top: 2vh;
-  color: rgba(255,255,255,0.4);
+  height: 21vh;
+  overflow: hidden;
 }
-
+main > .info .lyric{
+  margin-top: 12vh;
+}
+main > .info .lyric > p{
+  height: 3vh;
+  font-size: 2vh;
+  color: rgba(255,255,255,0.4);
+  text-align: center;
+}main > .info .lyric > p.active{
+  color: #FFF;
+}
 main > .info > ul{
-  margin-top: 18vh;
+  margin-top: 3vh;
 }
 main > .info > ul > li{
   float: left;
