@@ -156,9 +156,29 @@ var Fm = {
       if(!this.song.url){
         this.loadMusic()
       }else{
+        this.loadLyric()
         this.setMusic()
         this.list.push({song: this.song, channelId: this.channelId, channelName: this.channelName})
       }
+    })
+  },
+  loadLyric() {
+    $.ajax({
+      url: 'https://jirenguapi.applinzi.com/fm/getLyric.php',
+      dataType: 'json',
+      data: {sid: this.song.sid}
+    }).then((ret)=>{
+      var lyric = ret.lyric
+      this.lyricObj = {}
+      lyric.split('\n').forEach((line)=>{
+        var times = line.match(/\d{2}:\d{2}/g)
+        var str = line.replace(/\[.+?\]/g, '')
+        if(times){
+          times.forEach((time)=>{
+            this.lyricObj[time] = str
+          })
+        }
+      })
     })
   },
   setMusic() {
@@ -168,14 +188,18 @@ var Fm = {
     this.$main.find('.info .tag').text(this.channelName)
     this.$main.find('.info h1').text(this.song.title)
     this.$main.find('.info .artist').text(this.song.artist)
-    this.$main.find('.info .lrc').text(this.song.lrc)
+    this.$main.find('.btn-play').removeClass('icon-play').addClass('icon-pause')
   },
   updateStatus() {
-    var min = Math.floor(this.audio.currentTime / 60)
+    var min = Math.floor(this.audio.currentTime / 60) + ''
     var second = Math.floor(this.audio.currentTime % 60) + ''
     second = second.length === 2 ? second : '0' + second
     this.$main.find('.currentTime').text(min + ':' + second)
     this.$main.find('.progress').width(this.audio.currentTime/this.audio.duration*100 + '%')
+    var line = this.lyricObj[(min.length === 1 ? '0' + min : min) + ':' + second]
+    if(line){
+      this.$main.find('.info .lyric').text(line)
+    }
   }
 }
 
