@@ -104,6 +104,7 @@ var Fm = {
     this.bind()
     this.list = []
   },
+  
   bind() {
     var _this = this
     EventCenter.on('select-album', function(e, options){
@@ -143,9 +144,21 @@ var Fm = {
     })
     this.audio.addEventListener('pause', function(){
       clearInterval(_this.statusClock)
+      _this.autoplayNext()
     })
-
+    this.$main.find('.progressBar').on('click', function(e){
+      _this.controlProgress(e)
+    })
+    this.$main.find('.progressBtn').on('mousedown', function(){
+      document.onmousemove = function(e){
+        _this.controlProgress(e)
+      }
+    })
+    document.onmouseup = function(){
+      document.onmousemove = null
+    }
   },
+  
   loadMusic() {
     $.ajax({
       url: 'https://jirenguapi.applinzi.com/fm/getSong.php',
@@ -156,12 +169,23 @@ var Fm = {
       if(!this.song.url){
         this.loadMusic()
       }else{
-        this.loadLyric()
         this.setMusic()
         this.list.push({song: this.song, channelId: this.channelId, channelName: this.channelName})
       }
     })
   },
+
+  setMusic() {
+    this.audio.src = this.song.url
+    $('.bg').css('background-image', `url(${this.song.picture})`)
+    this.$main.find('aside figure').css('background-image', `url(${this.song.picture})`)
+    this.$main.find('.info .tag').text(this.channelName)
+    this.$main.find('.info h1').text(this.song.title)
+    this.$main.find('.info .artist').text(this.song.artist)
+    this.$main.find('.btn-play').removeClass('icon-play').addClass('icon-pause')
+    this.loadLyric()    
+  },
+
   loadLyric() {
     $.ajax({
       url: 'https://jirenguapi.applinzi.com/fm/getLyric.php',
@@ -171,40 +195,67 @@ var Fm = {
       var html = ''
       var lyric = ret.lyric
       this.lyricObj = {}
+      this.timeArr = []
       lyric.split('\n').forEach((line)=>{
         var times = line.match(/\d{2}:\d{2}/g)
         var str = line.replace(/\[.+?\]/g, '')
         if(times){
           times.forEach((time)=>{
             this.lyricObj[time] = str
-            html += `<p data-time="${time}">${this.lyricObj[time]}</p>`
           })
         }
       })
-      this.$main.find('.info .lyric').css({"margin-top": "12vh"}).html(html)
+      for(time in this.lyricObj){        
+        html += `<p data-time="${time}">${this.lyricObj[time]}</p>`
+      }
+      this.timeArr = Object.keys(this.lyricObj)
+      console.log(this.lyricObj,this.timeArr)
+      this.$main.find('.info .lyric').css({"margin-top": "9vh"}).html(html)
       
     })
   },
-  setMusic() {
-    this.audio.src = this.song.url
-    $('.bg').css('background-image', `url(${this.song.picture})`)
-    this.$main.find('aside figure').css('background-image', `url(${this.song.picture})`)
-    this.$main.find('.info .tag').text(this.channelName)
-    this.$main.find('.info h1').text(this.song.title)
-    this.$main.find('.info .artist').text(this.song.artist)
-    this.$main.find('.btn-play').removeClass('icon-play').addClass('icon-pause')
-  },
+
   updateStatus() {
     var min = Math.floor(this.audio.currentTime / 60) + ''
     var second = Math.floor(this.audio.currentTime % 60) + ''
     second = second.length === 2 ? second : '0' + second
+    // 歌曲当前时间
     this.$main.find('.currentTime').text(min + ':' + second)
-    this.$main.find('.progress').width(this.audio.currentTime/this.audio.duration*100 + '%')
+    // 进度条
+    this.$main.find('.progress').animate({width: this.audio.currentTime / this.audio.duration * 100 + '%'})
     // 歌词高亮和滚动
-    var lyricTime = (min.length === 1 ? '0' + min : min) + ':' + second
+    var lyricTime = (min.length === 1 ? '0' + min : min) + ':' + second 
+    console.log(lyricTime)   
+    var index = this.timeArr.indexOf(lyricTime)
+    if (index === -1){
+      var result = this.timeArr.filter(function(elem){
+        return (elem < lyricTime)
+      })
+      lyricTime = result[result.length-1]
+      index = this.timeArr.indexOf(lyricTime)
+    }
     this.$main.find(`[data-time="${lyricTime}"]`).addClass('active')
       .siblings().removeClass('active')
-      .parent().animate({marginTop: "-=3vh"})    
+      .parent().animate({marginTop: `${9 - 3 * index}vh`})    
+  },
+
+  controlProgress(e) {
+    var progressBar = this.$main.find('.progressBar')
+    var currentProgress = this.audio.currentTime / this.audio.duration * progressBar.width()
+    var toProgress = e.clientX - progressBar.offset().left
+    if (toProgress < 0){
+      toProgress = 0
+    }else if(toProgress > progressBar.width()){
+      toProgress = progressBar.width()
+    }
+    this.$main.find('.progress').animate({width: '+=' + ( toProgress - currentProgress ) / progressBar.width() * 100 + '%'})
+    this.audio.currentTime = toProgress / progressBar.width() * this.audio.duration
+  },
+
+  autoplayNext() {
+    if(this.audio.ended){
+      this.loadMusic()
+    }
   }
 }
 

@@ -132,14 +132,28 @@ main > .info > .progressBarContainer > .progressBar{
   border-radius: 0.3vh;
 }
 main > .info > .progressBarContainer > .progressBar > .progress{
-  position: absolute;
+  position: relative;
   top: 0;
   left: 0;
   height: 1vh;
   width: 0;
   background: #FFF;
   border-radius: 0.3vh;
-  transition: width 1s linear;
+}
+main > .info > .progressBarContainer > .progressBar .progressBtn{
+  position: absolute;
+  height: 2vh;
+  width: 2vh;
+  margin-top: -0.5vh;
+  margin-right: -0.5vh;
+  border-radius: 50%;
+  right: 0;
+  background: #FFF;
+  box-shadow: 0 0 4px 2px rgba(0,0,0,0.8) inset;
+  display: none;
+}
+main > .info > .progressBarContainer > .progressBar:hover .progressBtn{
+  display: block;
 }
 main > .info > .progressBarContainer > .currentTime{
   font-size: 2vh;
