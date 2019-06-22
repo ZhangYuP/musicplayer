@@ -103,6 +103,7 @@ var Fm = {
     this.audio.autoplay = 'autoplay'
     this.bind()
     this.list = []
+    this.timeArr = []
   },
   
   bind() {
@@ -136,18 +137,20 @@ var Fm = {
         EventCenter.fire('reset-album', _this.channelId)
       }
     })
-    this.audio.addEventListener('play', function(){
-      clearInterval(_this.statusClock)
+    this.audio.addEventListener('play', function(){      
+      _this.updateStatus()
       _this.statusClock = setInterval(function(){
         _this.updateStatus()
-      }, 1000)
+      }, 500)
     })
     this.audio.addEventListener('pause', function(){
       clearInterval(_this.statusClock)
       _this.autoplayNext()
     })
     this.$main.find('.progressBar').on('click', function(e){
-      _this.controlProgress(e)
+      if(!document.onmousemove){
+        _this.controlProgress(e)
+      }
     })
     this.$main.find('.progressBtn').on('mousedown', function(){
       document.onmousemove = function(e){
@@ -194,24 +197,21 @@ var Fm = {
     }).then((ret)=>{
       var html = ''
       var lyric = ret.lyric
-      this.lyricObj = {}
-      this.timeArr = []
+      var lyricObj = {}
       lyric.split('\n').forEach((line)=>{
         var times = line.match(/\d{2}:\d{2}/g)
         var str = line.replace(/\[.+?\]/g, '')
         if(times){
           times.forEach((time)=>{
-            this.lyricObj[time] = str
+            lyricObj[time] = str
           })
         }
       })
-      for(time in this.lyricObj){        
-        html += `<p data-time="${time}">${this.lyricObj[time]}</p>`
-      }
-      this.timeArr = Object.keys(this.lyricObj)
-      console.log(this.lyricObj,this.timeArr)
-      this.$main.find('.info .lyric').css({"margin-top": "9vh"}).html(html)
-      
+      this.timeArr = Object.keys(lyricObj).sort()
+      this.timeArr.forEach((time)=>{
+        html += `<p data-time="${time}">${lyricObj[time]}</p>`
+      })
+      this.$main.find('.info .lyric').html(html)      
     })
   },
 
@@ -219,13 +219,12 @@ var Fm = {
     var min = Math.floor(this.audio.currentTime / 60) + ''
     var second = Math.floor(this.audio.currentTime % 60) + ''
     second = second.length === 2 ? second : '0' + second
-    // 歌曲当前时间
+    // 显示歌曲当前时间
     this.$main.find('.currentTime').text(min + ':' + second)
     // 进度条
-    this.$main.find('.progress').animate({width: this.audio.currentTime / this.audio.duration * 100 + '%'})
+    this.$main.find('.progress').width(this.audio.currentTime / this.audio.duration * 100 + '%')
     // 歌词高亮和滚动
-    var lyricTime = (min.length === 1 ? '0' + min : min) + ':' + second 
-    console.log(lyricTime)   
+    var lyricTime = (min.length === 2 ? min : '0' + min) + ':' + second
     var index = this.timeArr.indexOf(lyricTime)
     if (index === -1){
       var result = this.timeArr.filter(function(elem){
@@ -236,7 +235,7 @@ var Fm = {
     }
     this.$main.find(`[data-time="${lyricTime}"]`).addClass('active')
       .siblings().removeClass('active')
-      .parent().animate({marginTop: `${9 - 3 * index}vh`})    
+      .parent().css({'margin-top': `${9 - 3 * index}vh`})
   },
 
   controlProgress(e) {
@@ -248,7 +247,7 @@ var Fm = {
     }else if(toProgress > progressBar.width()){
       toProgress = progressBar.width()
     }
-    this.$main.find('.progress').animate({width: '+=' + ( toProgress - currentProgress ) / progressBar.width() * 100 + '%'})
+    this.$main.find('.progress').width('+=' + ( toProgress - currentProgress ) / progressBar.width() * 100 + '%')
     this.audio.currentTime = toProgress / progressBar.width() * this.audio.duration
   },
 
