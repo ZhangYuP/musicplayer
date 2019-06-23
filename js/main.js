@@ -78,7 +78,7 @@ var Footer = {
   },
 
   renderFooter(channels) {
-    var html = ''
+    var html = `<li data-channel-id="collection" data-channel-name="我的收藏"><div class="cover" style="background-image:url('https://s2.ax1x.com/2019/06/23/ZFIIYt.jpg')"></div><h3>我的收藏</h3></li>`
     channels.forEach(function(channel){
       html += `<li data-channel-id="${channel.channel_id}" data-channel-name="${channel.name}"><div class="cover" style="background-image:url('${channel.cover_small}')"></div><h3>${channel.name}</h3></li>`
     })
@@ -104,6 +104,7 @@ var Fm = {
     this.bind()
     this.list = []
     this.timeArr = []
+    this.index = 0
   },
   
   bind() {
@@ -145,7 +146,9 @@ var Fm = {
     })
     this.audio.addEventListener('pause', function(){
       clearInterval(_this.statusClock)
-      _this.autoplayNext()
+      if(_this.audio.ended){
+        _this.loadMusic()
+      }
     })
     this.$main.find('.progressBar').on('click', function(e){
       if(!document.onmousemove){
@@ -160,25 +163,43 @@ var Fm = {
     document.onmouseup = function(){
       document.onmousemove = null
     }
-  },
-  
-  loadMusic() {
-    $.ajax({
-      url: 'https://jirenguapi.applinzi.com/fm/getSong.php',
-      dataType: 'json',
-      data: {channel: 'this.channelId'}
-    }).then((ret)=>{
-      this.song = ret['song'][0]
-      if(!this.song.url){
-        this.loadMusic()
-      }else{
-        this.setMusic()
-        this.list.push({song: this.song, channelId: this.channelId, channelName: this.channelName})
-      }
+    this.$main.find('.btn-collect').on('click', function(){
+      _this.collectMusic()
     })
   },
 
+  loadMusic() {
+    if(this.channelId === 'collection'){
+      var arr = Object.keys(localStorage)
+      if(arr.length === 0){
+        alert('你还没有收藏歌曲哦，请点击右侧任意专辑开始播放！')
+      }else{
+        if(this.index >= arr.length){this.index = 0}
+        this.song = JSON.parse(localStorage[arr[this.index]]).song
+        console.log(this.song)
+        this.channelName = arr[this.index].channelName
+        this.index += 1
+        this.setMusic()
+        this.list.push({song: this.song, channelId: this.channelId, channelName: this.channelName})
+      }
+    }else{
+      $.ajax({
+        url: 'https://jirenguapi.applinzi.com/fm/getSong.php',
+        dataType: 'json',
+        data: {channel: 'this.channelId'}
+      }).then((ret)=>{
+        this.song = ret['song'][0]
+        if(!this.song.url){
+          this.loadMusic()
+        }
+        this.setMusic()
+        this.list.push({song: this.song, channelId: this.channelId, channelName: this.channelName})     
+      })
+    }
+  },
+
   setMusic() {
+    this.changeCollectionStatus()
     this.audio.src = this.song.url
     $('.bg').css('background-image', `url(${this.song.picture})`)
     this.$main.find('aside figure').css('background-image', `url(${this.song.picture})`)
@@ -186,7 +207,7 @@ var Fm = {
     this.$main.find('.info h1').text(this.song.title)
     this.$main.find('.info .artist').text(this.song.artist)
     this.$main.find('.btn-play').removeClass('icon-play').addClass('icon-pause')
-    this.loadLyric()    
+    this.loadLyric()
   },
 
   loadLyric() {
@@ -250,10 +271,22 @@ var Fm = {
     this.$main.find('.progress').width('+=' + ( toProgress - currentProgress ) / progressBar.width() * 100 + '%')
     this.audio.currentTime = toProgress / progressBar.width() * this.audio.duration
   },
-
-  autoplayNext() {
-    if(this.audio.ended){
-      this.loadMusic()
+  
+  collectMusic() {
+    if(!this.isCollected){
+      localStorage.setItem(this.song.sid, JSON.stringify({song: this.song, channelId: this.channelId, channelName: this.channelName}))
+    }else{
+      localStorage.removeItem(this.song.sid)
+    }
+    this.changeCollectionStatus()
+  },
+  changeCollectionStatus() {
+    if(localStorage.getItem(this.song.sid)){
+      this.isCollected = true
+      this.$main.find('.btn-collect').addClass('active')
+    }else{
+      this.isCollected = false
+      this.$main.find('.btn-collect').removeClass('active')
     }
   }
 }
