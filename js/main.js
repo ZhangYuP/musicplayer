@@ -7,7 +7,6 @@ var EventCenter = {
   }
 }
 
-
 var Footer = {
   init() {
     this.$footer = $('footer')

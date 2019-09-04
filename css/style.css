@@ -38,10 +38,10 @@ body{
   bottom: -5vh;
   background: url(https://s2.ax1x.com/2019/06/23/ZFIIYt.jpg) center center;
   background-size: cover;
-  filter: blur(5px);    
+  filter: blur(5px);
 }
 .bg::after{
-  content: '';  
+  content: '';
   position: absolute;
   top: 0;
   left: 0;
@@ -72,7 +72,7 @@ main aside .actions{
   margin-top: 5vh;
 }
 main .iconfont{
-  font-size: 6vh;  
+  font-size: 6vh;
   color: rgba(255,255,255,0.4);
   cursor: pointer;
   transition: all 0.3s;
@@ -95,7 +95,7 @@ main .info .tag{
   background: #2E6EEC;
 }
 main .info h1{
-  font-size: 6vh;
+  font-size: 4vh;
   height: 8vh;
   margin-top: 2vh;
 }
