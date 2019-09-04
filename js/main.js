@@ -34,7 +34,7 @@ var Footer = {
         this.$ul.animate({left: '-=' + distance}, 400, ()=>{
           this.isAnimate = false
         })
-      }      
+      }
     })
 
     this.$leftBtn.on('click', ()=>{
@@ -48,11 +48,11 @@ var Footer = {
         })
       }
     })
-    
+
     this.$footer.on('click', 'li', function(){
       $(this).addClass('active')
         .siblings().removeClass('active')
-      
+
       EventCenter.fire('select-album', {
         channelId: $(this).attr('data-channel-id'),
         channelName: $(this).attr('data-channel-name')
@@ -64,7 +64,7 @@ var Footer = {
       .siblings().removeClass('active')
     })
   },
-  
+
   render() {
     $.ajax({
       url: 'https://jirenguapi.applinzi.com/fm/getChannels.php',
@@ -106,7 +106,7 @@ var Fm = {
     this.timeArr = []
     this.index = 0
   },
-  
+
   bind() {
     var _this = this
     EventCenter.on('select-album', function(e, options){
@@ -138,7 +138,7 @@ var Fm = {
         EventCenter.fire('reset-album', _this.channelId)
       }
     })
-    this.audio.addEventListener('play', function(){      
+    this.audio.addEventListener('play', function(){
       _this.updateStatus()
       _this.statusClock = setInterval(function(){
         _this.updateStatus()
@@ -170,13 +170,18 @@ var Fm = {
 
   loadMusic() {
     if(this.channelId === 'collection'){
-      var arr = Object.keys(localStorage)
+      var arr = []
+      Object.keys(localStorage).forEach(key => {
+          if(JSON.parse(localStorage[key])['song']){
+            arr.push(key)
+          }
+        }
+      )
       if(arr.length === 0){
         alert('你还没有收藏歌曲哦，请点击右侧任意专辑开始播放！')
       }else{
         if(this.index >= arr.length){this.index = 0}
         this.song = JSON.parse(localStorage[arr[this.index]]).song
-        console.log(this.song)
         this.channelName = arr[this.index].channelName
         this.index += 1
         this.setMusic()
@@ -191,9 +196,10 @@ var Fm = {
         this.song = ret['song'][0]
         if(!this.song.url){
           this.loadMusic()
+        }else{
+          this.setMusic()
+          this.list.push({song: this.song, channelId: this.channelId, channelName: this.channelName})
         }
-        this.setMusic()
-        this.list.push({song: this.song, channelId: this.channelId, channelName: this.channelName})     
       })
     }
   },
@@ -232,7 +238,7 @@ var Fm = {
       this.timeArr.forEach((time)=>{
         html += `<p data-time="${time}">${lyricObj[time]}</p>`
       })
-      this.$main.find('.info .lyric').html(html)      
+      this.$main.find('.info .lyric').html(html)
     })
   },
 
@@ -271,7 +277,7 @@ var Fm = {
     this.$main.find('.progress').width('+=' + ( toProgress - currentProgress ) / progressBar.width() * 100 + '%')
     this.audio.currentTime = toProgress / progressBar.width() * this.audio.duration
   },
-  
+
   collectMusic() {
     if(!this.isCollected){
       localStorage.setItem(this.song.sid, JSON.stringify({song: this.song, channelId: this.channelId, channelName: this.channelName}))
@@ -280,6 +286,7 @@ var Fm = {
     }
     this.changeCollectionStatus()
   },
+
   changeCollectionStatus() {
     if(localStorage.getItem(this.song.sid)){
       this.isCollected = true
