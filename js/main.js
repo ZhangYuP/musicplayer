@@ -103,6 +103,7 @@ var Fm = {
     this.bind()
     this.list = []
     this.timeArr = []
+    this.collections = []
     this.index = 0
   },
 
@@ -169,19 +170,13 @@ var Fm = {
 
   loadMusic() {
     if(this.channelId === 'collection'){
-      var arr = []
-      Object.keys(localStorage).forEach(key => {
-          if(JSON.parse(localStorage[key])['song']){
-            arr.push(key)
-          }
-        }
-      )
-      if(arr.length === 0){
+      let arr = JSON.parse(localStorage.getItem('collections'))
+      if(!arr){
         alert('你还没有收藏歌曲哦，请点击右侧任意专辑开始播放！')
       }else{
         if(this.index >= arr.length){this.index = 0}
-        this.song = JSON.parse(localStorage[arr[this.index]]).song
-        this.channelName = JSON.parse(localStorage[arr[this.index]]).channelName
+        this.song = arr[this.index].song
+        this.channelName = arr[this.index].channelName
         this.index += 1
         this.setMusic()
         this.list.push({song: this.song, channelId: this.channelId, channelName: this.channelName})
@@ -278,16 +273,19 @@ var Fm = {
   },
 
   collectMusic() {
+    localStorage.removeItem('collections')
     if(!this.isCollected){
-      localStorage.setItem(this.song.sid, JSON.stringify({song: this.song, channelId: this.channelId, channelName: this.channelName}))
+      this.collections.push({song: this.song, channelId: this.channelId, channelName: this.channelName})
     }else{
-      localStorage.removeItem(this.song.sid)
+      let index = this.collections.findIndex(value => value.song.sid === this.song.sid)
+      this.collections.splice(index, 1)
     }
+    localStorage.setItem('collections', JSON.stringify(this.collections))
     this.changeCollectionStatus()
   },
 
   changeCollectionStatus() {
-    if(localStorage.getItem(this.song.sid)){
+    if(this.collections.find(value => value.song.sid === this.song.sid)){
       this.isCollected = true
       this.$main.find('.btn-collect').addClass('active')
     }else{
@@ -299,3 +297,4 @@ var Fm = {
 
 Footer.init()
 Fm.init()
+
