@@ -181,7 +181,7 @@ var Fm = {
       }else{
         if(this.index >= arr.length){this.index = 0}
         this.song = JSON.parse(localStorage[arr[this.index]]).song
-        this.channelName = arr[this.index].channelName
+        this.channelName = JSON.parse(localStorage[arr[this.index]]).channelName
         this.index += 1
         this.setMusic()
         this.list.push({song: this.song, channelId: this.channelId, channelName: this.channelName})
