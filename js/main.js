@@ -285,6 +285,7 @@ var Fm = {
   },
 
   changeCollectionStatus() {
+    this.collections = localStorage.getItem('collections', JSON.stringify(this.collections)) || []
     if(this.collections.find(value => value.song.sid === this.song.sid)){
       this.isCollected = true
       this.$main.find('.btn-collect').addClass('active')
